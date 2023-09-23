@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
+
     /**
      * route : GET /contacts
      * Get contacts
