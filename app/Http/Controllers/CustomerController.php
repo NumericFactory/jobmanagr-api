@@ -26,6 +26,7 @@ class CustomerController extends Controller
      * Get customer
      */
     public function find(int $id, Request $request) {
+        
         if($request->withcontacts && $request->withcontacts == 'true') {
             $customer = Customer::with('contacts')->find($id);
         } else {
