@@ -1,5 +1,5 @@
 deploy:
-	rsyn -avz public/build missionmanager:~/sites/jobmanagr.com/jobmanagr-api/public
+	# rsyn -avz public/build missionmanager:~/sites/jobmanagr.com/jobmanagr-api/public
 	ssh missionmanager 'cd sites/jobmanagr.com/jobmanagr-api && git pull origin main && make install'
 
 install: vendor/autoload.php .env public/storage

@@ -22,10 +22,15 @@ class CustomerController extends Controller
 
     /**
      * route : GET /customers/{$id}
+     * route : GET /customers/{$id}?withcontacts=true
      * Get customer
      */
-    public function find(int $id) {
-        $customers = Customer::find($id);
+    public function find(int $id, Request $request) {
+        if($request->withcontacts && $request->withcontacts == 'true') {
+            $customer = Customer::with('contacts')->find($id);
+        } else {
+            $customer = Customer::find($id);
+        }
         return response()->json([
             'data' => $customer,
             'status' => 200],
