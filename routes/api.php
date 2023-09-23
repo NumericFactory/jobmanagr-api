@@ -32,6 +32,7 @@ Route::patch('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'p
 Route::delete('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'delete']);
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index']);
+Route::get('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'find']);
 Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'create']);
 Route::put('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'update']);
 Route::patch('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'patch']);

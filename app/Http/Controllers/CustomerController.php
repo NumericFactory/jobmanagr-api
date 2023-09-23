@@ -10,8 +10,13 @@ class CustomerController extends Controller
      * route : GET /customers
      * Get customers
      */
-    public function index() {
-        $customers = Customer::all();
+    public function index(Request $request) {
+        if($request->withcontacts && $request->withcontacts == 'true') {
+            $customers = Customer::with('contacts')->get();
+        }
+        else {
+            $customers = Customer::all();
+        }
         return response()->json([
             'data' => $customers,
             'status' => 200
