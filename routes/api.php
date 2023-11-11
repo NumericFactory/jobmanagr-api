@@ -19,6 +19,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/', function () {return "Hello I am JobBoard API!";});
+
+Route::get('/logout', [LogoutController::class, 'invoke'])
+    ->middleware(['auth', 'auth.session']);
+Route::get('/login', function () {return "Hello I am JobBoard API!";});
+
 Route::get('/jobs', [\App\Http\Controllers\JobController::class, 'index']);
 Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'create']);
 Route::put('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'update']);
