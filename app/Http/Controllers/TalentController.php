@@ -11,9 +11,9 @@ class TalentController extends Controller
      * Get talents
      */
     public function index() {
-        $talents = Talent::with('roles') // Eager loading
+        $talents = Talent::with('skills') // Eager loading
         ->get();
-        // $talents = Talent::all();
+        $talents = Talent::all();
         return response()->json([
             'data' => $talents,
             'status' => 200
