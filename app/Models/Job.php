@@ -28,6 +28,13 @@ class Job extends Model
         'status',
     ];
     
+    /**
+     * Get all of the skill for the job.
+     */
+    public function skills(): MorphToMany
+    {
+        return $this->morphToMany(Skill::class, 'skillable');
+    }
 	
 
     public function customer()

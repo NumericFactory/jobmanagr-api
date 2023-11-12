@@ -21,19 +21,29 @@ class Talent extends Model
         'first',
         'xp',
         'tjm',
+        'address',
+        'complementaddress',
+        'cp',
         'city',
         'country',
         'remote',
         'linkedin',
         'indicatifphone',
         'phone',
-        'email'
+        'email',
+        'siren',
+        'nic',
+        'siret',
+        'nda',
     ];
     
-	
-
-    public function skills()
+    /**
+     * Get all of the skill for the talent.
+     */
+    public function skills(): MorphToMany
     {
-       // return $this->belongsTo('App\Models\Customer');
+        return $this->morphToMany(Skill::class, 'skillable');
     }
+   
+
 }

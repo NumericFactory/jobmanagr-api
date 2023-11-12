@@ -18,14 +18,20 @@ class Skill extends Model
         'title',
         'level'
     ];
-    
-    public function jobs()
-    {
-       // return $this->belongsTo('App\Models\Customer');
-    }
 
-    public function talents()
+    /**
+     * Get all of the Talents that are assigned this skill.
+     */
+    public function talents(): MorphToMany
     {
-       // return $this->belongsTo('App\Models\Customer');
+        return $this->morphedByMany(Talent::class, 'skillable');
+    }
+ 
+    /**
+     * Get all of the Jobs that are assigned this skill.
+     */
+    public function jobs(): MorphToMany
+    {
+        return $this->morphedByMany(Job::class, 'skillable');
     }
 }
