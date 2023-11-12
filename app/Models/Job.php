@@ -33,7 +33,7 @@ class Job extends Model
      */
     public function skills(): MorphToMany
     {
-        return $this->morphToMany(Skill::class, 'skillable');
+        return $this->morphToMany(Skill::class, 'skillable', 'skillables');
     }
 	
 

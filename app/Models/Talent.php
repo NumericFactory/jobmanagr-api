@@ -40,10 +40,11 @@ class Talent extends Model
     /**
      * Get all of the skill for the talent.
      */
-    public function skills(): MorphToMany
+    public function skills()
     {
         return $this->morphToMany(Skill::class, 'skillable');
     }
+
    
 
 }

@@ -22,9 +22,13 @@ class Skill extends Model
     /**
      * Get all of the Talents that are assigned this skill.
      */
-    public function talents(): MorphToMany
+    // public function talents(): MorphToMany
+    // {
+    //     return $this->morphedByMany(Talent::class, 'skillable');
+    // }
+    public function talents()
     {
-        return $this->morphedByMany(Talent::class, 'skillable');
+        return $this->morphToMany(Talent::class, 'skillable', 'skillables');
     }
  
     /**
@@ -32,6 +36,6 @@ class Skill extends Model
      */
     public function jobs(): MorphToMany
     {
-        return $this->morphedByMany(Job::class, 'skillable');
+        return $this->morphedByMany(Job::class, 'skillable', 'skillables');
     }
 }
