@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Talent extends Model
 {
@@ -40,7 +41,7 @@ class Talent extends Model
     /**
      * Get all of the skill for the talent.
      */
-    public function skills()
+    public function skills(): MorphToMany
     {
         return $this->morphToMany(Skill::class, 'skillable');
     }

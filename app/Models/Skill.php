@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Skill extends Model
 {
@@ -26,9 +27,9 @@ class Skill extends Model
     // {
     //     return $this->morphedByMany(Talent::class, 'skillable');
     // }
-    public function talents()
+    public function talents(): MorphToMany
     {
-        return $this->morphToMany(Talent::class, 'skillable', 'skillables');
+        return $this->morphedByMany(Talent::class, 'skillable');
     }
  
     /**
@@ -36,6 +37,6 @@ class Skill extends Model
      */
     public function jobs(): MorphToMany
     {
-        return $this->morphedByMany(Job::class, 'skillable', 'skillables');
+        return $this->morphedByMany(Job::class, 'skillable');
     }
 }

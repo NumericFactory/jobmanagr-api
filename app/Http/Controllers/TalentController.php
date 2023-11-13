@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 use App\Models\Talent;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 
 class TalentController extends Controller
 {
     /**
-     * route : GET talents
-     * Get talents
+     * route : GET /talents
+     * Get all talents
      */
     public function index() {
-
-        $talent = Talent::with('skills')->get();
-
-        //dd($talent);
-
-        $talents = Talent::with('skills') // Eager loading
-        ->get();
-        //$talents = Talent::all();
+        $talents = Talent::with('skills')->get();
         return response()->json([
             'data' => $talents,
             'status' => 200
@@ -28,17 +22,26 @@ class TalentController extends Controller
     }
 
     /**
-     * route : GET talents/{$id}
-     * Get talent
+     * route : GET /talents/{$id}
+     * Get a talent by id
      */
     public function find(int $id) {
-        $talent = Talent::find($id);
-        dd( $talent);
+        $talent = Talent::find($id)::with('skills')->get();
         return response()->json(['data' => $talent, 'status' => 200], 200 );
     }
 
     /**
-     * route : POST talents
+     * route : GET /talents/search/{$skillid}
+     * search Talent by skill
+     */
+    public function searchBySkills(Request $request) {
+        $skill = Skill::find($request->skillid);
+        $talents = $skill->talents()->get();
+        return response()->json(['data' => $talents, 'status' => 200], 200 );
+    }
+
+    /**
+     * route : POST /talents
      * Create and store a new talent
      */
     public function create(Request $request) {
@@ -67,7 +70,7 @@ class TalentController extends Controller
     }
     
     /**
-     * route : PATCH talents/{$id}
+     * route : PATCH /talents/{$id}
      * patch fields for an existing talent
      */
     public function patch(int $id, Request $request) {
@@ -84,7 +87,7 @@ class TalentController extends Controller
     }
 
     /**
-     * route : DELETE talents/{$id}
+     * route : DELETE /talents/{$id}
      * delete a talent
      */
     public function delete(int $id) {
