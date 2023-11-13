@@ -25,8 +25,8 @@ class TalentController extends Controller
      * route : GET /talents/{$id}
      * Get a talent by id
      */
-    public function find(int $id) {
-        $talent = Talent::find($id)::with('skills')->get();
+    public function find(Request $request) {
+        $talent = Talent::find($request->id)::with('skills')->get();
         return response()->json(['data' => $talent, 'status' => 200], 200 );
     }
 
