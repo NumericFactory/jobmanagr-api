@@ -41,7 +41,6 @@ class TalentController extends Controller
      * search Talent by skill
      */
     public function searchBySkills(Request $request) {
-        dd($request->skill_title);
         $talents = Talent::with('skills')
             ->whereHas('skills', function ($query) use ($request) {
                 $query->where('title', 'like', $request->skill_title.'%');
