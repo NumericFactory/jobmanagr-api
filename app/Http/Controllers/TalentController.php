@@ -28,8 +28,8 @@ class TalentController extends Controller
     public function find(int $id) {
         $talent = Talent::find($id);
         if($talent) {
-            $talent = Talent::find($id)::with('skills')->first();
-            return response()->json(['data' => $talent, 'status' => 200], 200 );
+            $talent = Talent::find($id)::with('skills')->get();
+            return response()->json(['data' => $talent[0], 'status' => 200], 200 );
         }
         else {
             return response()->json(['data' => null, 'status' => 404, 'message'=>'no talent found for id='. $id], 404 );
@@ -41,6 +41,7 @@ class TalentController extends Controller
      * search Talent by skill
      */
     public function searchBySkills(Request $request) {
+        dd($request->skill_title);
         $talents = Talent::with('skills')
             ->whereHas('skills', function ($query) use ($request) {
                 $query->where('title', 'like', $request->skill_title.'%');
