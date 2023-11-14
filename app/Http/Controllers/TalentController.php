@@ -42,7 +42,7 @@ class TalentController extends Controller
      */
     public function searchBySkills(Request $request) {
         $skill = strtolower($request->skill_title);
-        if($skill === '') {
+        if($skill === 'all') {
             $talents = Talent::with('skills')->get();
         }
         else {
