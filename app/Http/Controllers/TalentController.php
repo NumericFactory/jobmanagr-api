@@ -41,21 +41,17 @@ class TalentController extends Controller
      * search Talent by skill
      */
     public function searchBySkills(Request $request) {
-        $talents = Talent::with('skills')
-            ->whereHas('skills', function ($query) use ($request) {
-                $query->where('title', 'like', $request->skill_title.'%');
-                })
-            ->get();
-        return response()->json(['data' => $talents, 'status' => 200], 200 );
-    }
-
-    /**
-     * route : GET /talents/search/{$xp}
-     * search Talent by xp
-     */
-    public function searchByXp(Request $request) {
-        $talents = Talent::with('skills')
-            ->where('xp', '>=', $request->xp);
+        $skill = strtolower($request->skill_title);
+        if($skill === '') {
+            $talents = Talent::with('skills')->get();
+        }
+        else {
+            $talents = Talent::with('skills')
+                ->whereHas('skills', function ($query) use ($request) {
+                    $query->where('title', 'like', $request->skill_title.'%');
+                    })
+                ->get();
+        }
         return response()->json(['data' => $talents, 'status' => 200], 200 );
     }
 
