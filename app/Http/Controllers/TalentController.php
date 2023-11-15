@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\Talent;
 use App\Models\Skill;
 use Illuminate\Http\Request;
+//use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class TalentController extends Controller
 {
@@ -37,21 +39,29 @@ class TalentController extends Controller
     }
 
     /**
-     * route : GET /talents/search/{$skillid}
-     * search Talent by skill
+     * route : GET /talents/search/search?
+     * search Talents
+     * @queryParam skill string
+     * @queryParam city string
+     * @queryParam tjmMax integer
+     * @param Request $request
+     * 
      */
-    public function searchBySkills(Request $request) {
-        $skill = strtolower($request->skill_title);
-        if($skill === 'all') {
-            $talents = Talent::with('skills')->get();
-        }
-        else {
-            $talents = Talent::with('skills')
-                ->whereHas('skills', function ($query) use ($request) {
-                    $query->where('title', 'like', $request->skill_title.'%');
-                    })
-                ->get();
-        }
+    public function search(Request $request) {
+        $skill = $request->skill ? strtolower($request->skill) : null;
+        $city = $request->city ? strtolower($request->city) : null;
+        $tjmMax = $request->tjmMax ?  $request->tjmMax : null;
+        $talents = Talent::with('skills')
+            ->whereHas('skills', function ($query) use ($request) {
+                $query->where('title', 'like', $request->skill.'%');
+            }) 
+            ->when($city, function ($query, string $city) {
+                $query->where('city', $city);
+            })
+            ->when($tjmMax, function ($query, string $tjmMax) {
+                $query->where('tjm', '<=', $tjmMax);
+            })
+            ->get();
         return response()->json(['data' => $talents, 'status' => 200], 200 );
     }
 

@@ -90,7 +90,7 @@ Route::patch('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'patch']
 Route::delete('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'delete']);
 
 Route::get('/talents', [\App\Http\Controllers\TalentController::class, 'index']);
-Route::get('/talents/search/{skill_title}', [\App\Http\Controllers\TalentController::class, 'searchBySkills']);
+Route::get('/talents/search', [\App\Http\Controllers\TalentController::class, 'search']);
 Route::get('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'find']);
 Route::post('/talents', [\App\Http\Controllers\TalentController::class, 'create']);
 Route::put('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'update']);
