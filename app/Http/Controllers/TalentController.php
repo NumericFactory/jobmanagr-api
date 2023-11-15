@@ -56,7 +56,7 @@ class TalentController extends Controller
                 $query->where('title', 'like', $request->skill.'%');
             }) 
             ->when($city, function ($query, string $city) {
-                $query->where('city', $city);
+                $query->where('city', 'like', $city);
             })
             ->when($tjmMax, function ($query, string $tjmMax) {
                 $query->where('tjm', '<=', $tjmMax);
