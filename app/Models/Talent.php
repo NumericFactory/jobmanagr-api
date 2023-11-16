@@ -46,6 +46,16 @@ class Talent extends Model
         return $this->morphToMany(Skill::class, 'skillable');
     }
 
+    /**
+     * Get all of the resume for the talent.
+     */
+    public function resumes() {
+        return $this->hasMany(Resume::class);
+    }
+
+    
+
+
    
 
 }

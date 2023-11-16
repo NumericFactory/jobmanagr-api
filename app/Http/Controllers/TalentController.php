@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\Talent;
 use App\Models\Skill;
 use Illuminate\Http\Request;
-//use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TalentController extends Controller
 {
@@ -14,7 +14,7 @@ class TalentController extends Controller
      * Get all talents
      */
     public function index() {
-        $talents = Talent::with('skills')->get();
+        $talents = Talent::with('skills', 'resumes')->get();
         return response()->json([
             'data' => $talents,
             'status' => 200
@@ -28,10 +28,9 @@ class TalentController extends Controller
      * Get a talent by id
      */
     public function find(int $id) {
-        $talent = Talent::find($id);
-        if($talent) {
-            $talent = Talent::find($id)::with('skills')->get();
-            return response()->json(['data' => $talent[0], 'status' => 200], 200 );
+        $talent = Talent::with('skills', 'resumes')->where('id', $id)->get();
+        if(count($talent) > 0) {
+            return response()->json(['data' => $talent, 'status' => 200], 200 );
         }
         else {
             return response()->json(['data' => null, 'status' => 404, 'message'=>'no talent found for id='. $id], 404 );
@@ -41,9 +40,9 @@ class TalentController extends Controller
     /**
      * route : GET /talents/search/search?
      * search Talents
-     * @queryParam skill string
-     * @queryParam city string
-     * @queryParam tjmMax integer
+     * @queryParam skill string (optionnal)
+     * @queryParam city string (optionnal)
+     * @queryParam tjmMax integer (optionnal)
      * @param Request $request
      * 
      */
@@ -126,6 +125,53 @@ class TalentController extends Controller
             ],
             200
         );
+        }
+    }
+
+    /**
+     * route : POST /talents/{$id}/uploadResume
+     * upload a resume for a talent
+     * @param int $id (profile id)
+     * @param Request $request (file)
+     */
+    public function uploadResume(int $profileId, Request $request) {
+        $talent = Talent::find($profileId);
+        if($talent && $talent->last) {
+           $lastname = strtolower($talent->last);
+           $firstname = $talent->first ? '-'.strtolower($talent->first):'';
+           $path = 'profiles/'.$profileId;
+           $fileName = 'cv-' . $lastname .  $firstname . '-' . $profileId;
+           $extension = $request->file->getClientOriginalExtension();
+           Storage::disk('local')->put($path.'/'.$fileName.'.'.$extension, file_get_contents($request->file).$extension);
+            $resume = $talent->resumes()->create([
+                'link' => '/'.$path.'/'.$fileName.'.'.$extension,
+                'talent_id' => $profileId
+            ]);
+           return '/'.$path.'/'.$fileName.'.'.$extension;
+        }
+        else {
+            return response()->json(['data' => null, 'status' => 404, 'message'=>'no talent found for id='. $id], 404 );
+        }
+    }
+
+    public function downloadResume(int $profileId, Request $request) {
+        $talent = Talent::find($profileId);
+        $lastname = strtolower($talent->last);
+        $firstname = strtolower($talent->first);
+        $filename = 'cv-' .  $lastname .'-'.  $firstname .'-'. $profileId;
+        $anonymousFilename = 'cv-'.  $firstname .'-'. $profileId;
+        $extension = 'pdf';
+        $path = 'profiles/'.$profileId;
+        return Storage::download('/'. $path . '/' . $filename . '.' . $extension);
+    }
+
+    public function getResumeLinks(int $profileId) {
+        $talent = Talent::find($profileId);
+        if(count($talent->resumes) > 0) {
+            return response()->json(['data' => $resumes, 'status' => 200], 200 );
+        }
+        else {
+            return response()->json(['data' => null, 'status' => 404, 'message'=>'no resume found for id='. $profileId], 404 );
         }
     }
 }

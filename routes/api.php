@@ -96,6 +96,9 @@ Route::post('/talents', [\App\Http\Controllers\TalentController::class, 'create'
 Route::put('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'update']);
 Route::patch('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'patch']);
 Route::delete('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'delete']);
+Route::get('/talents/{id}/resumes', [\App\Http\Controllers\TalentController::class, 'getResumeLinks']);
+Route::post('/talents/{id}/resumes/upload', [\App\Http\Controllers\TalentController::class, 'uploadResume']);
+Route::get('/talents/{id}/resumes/download', [\App\Http\Controllers\TalentController::class, 'downloadResume']);
 
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index']);
