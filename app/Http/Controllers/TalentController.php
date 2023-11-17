@@ -183,7 +183,7 @@ class TalentController extends Controller
      * @param Request $request (value)
      * @return json
      */
-    public function saveField(int $profileId, string $field, Request $request) {
+    public function updateField(int $profileId, string $field, Request $request) {
         $talent = Talent::find($profileId);
         $talent->$field = $request->value;
         $talent->save();
@@ -197,7 +197,7 @@ class TalentController extends Controller
      * @param Request $request (address, complementaddress, cp, city, country)
      * @return json
      */
-    public function saveAddress(int $profileId, Request $request) {
+    public function updateAddress(int $profileId, Request $request) {
         $talent = Talent::find($profileId);
         $talent->address = $request->address;
         $talent->complementaddress = $request->complementaddress;

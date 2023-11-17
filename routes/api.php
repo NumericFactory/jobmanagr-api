@@ -99,10 +99,8 @@ Route::delete('/talents/{id}', [\App\Http\Controllers\TalentController::class, '
 Route::get('/talents/{id}/resumes', [\App\Http\Controllers\TalentController::class, 'getResumeLinks']);
 Route::post('/talents/{id}/resumes/upload', [\App\Http\Controllers\TalentController::class, 'uploadResume']);
 Route::get('/talents/{id}/resumes/download', [\App\Http\Controllers\TalentController::class, 'downloadResume']);
-Route::put('/talents/{id}/{field}', [\App\Http\Controllers\TalentController::class, 'saveField']);
-Route::put('/talents/{id}/address', [\App\Http\Controllers\TalentController::class, 'saveAddress']);
-
-
+Route::put('/talents/{id}/address', [\App\Http\Controllers\TalentController::class, 'updateAddress']);
+Route::put('/talents/{id}/{field}', [\App\Http\Controllers\TalentController::class, 'updateField']);
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index']);
 Route::get('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'find']);
