@@ -174,4 +174,37 @@ class TalentController extends Controller
             return response()->json(['data' => null, 'status' => 404, 'message'=>'no resume found for id='. $profileId], 404 );
         }
     }
+
+    /**
+     * route : PUT /talents/{$id}/{$field}
+     * save a field for a talent
+     * @param int $id (profile id)
+     * @param string $field (field name)
+     * @param Request $request (value)
+     * @return json
+     */
+    public function saveField(int $profileId, string $field, Request $request) {
+        $talent = Talent::find($profileId);
+        $talent->$field = $request->value;
+        $talent->save();
+        return response()->json(['data' => $talent, 'status' => 200], 200 );    
+    }
+
+    /**
+     * route : PUT /talents/{$id}/address
+     * save address for a talent
+     * @param int $id (profile id)
+     * @param Request $request (address, complementaddress, cp, city, country)
+     * @return json
+     */
+    public function saveAddress(int $profileId, Request $request) {
+        $talent = Talent::find($profileId);
+        $talent->address = $request->address;
+        $talent->complementaddress = $request->complementaddress;
+        $talent->cp = $request->cp;
+        $talent->city = $request->city;
+        $talent->country = $request->country;
+        $talent->save();
+        return response()->json(['data' => $talent, 'status' => 200], 200 );    
+    }
 }
