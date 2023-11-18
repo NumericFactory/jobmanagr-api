@@ -184,7 +184,7 @@ class TalentController extends Controller
      * @return json
      */
     public function updateField(int $profileId, string $field, Request $request) {
-        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get();
+        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
         $talent->$field = $request->value;
         $talent->save();
         return response()->json(['data' => $talent, 'status' => 200], 200 );    
@@ -198,7 +198,7 @@ class TalentController extends Controller
      * @return json
      */
     public function updateAddress(int $profileId, Request $request) {
-        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get();
+        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
         $talent->address = $request->address;
         $talent->complementaddress = $request->complementaddress;
         $talent->cp = $request->cp;
