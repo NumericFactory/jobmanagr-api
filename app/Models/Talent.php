@@ -39,7 +39,7 @@ class Talent extends Model
     ];
     
     /**
-     * Get all of the skill for the talent.
+     * Get all of the skills for the talent.
      */
     public function skills(): MorphToMany
     {
@@ -47,7 +47,7 @@ class Talent extends Model
     }
 
     /**
-     * Get all of the resume for the talent.
+     * Get all of the resumes for the talent.
      */
     public function resumes() {
         return $this->hasMany(Resume::class);
