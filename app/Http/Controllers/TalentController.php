@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UploadResumeRequest;
 use App\Services\UploadFileManagerService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 
 enum TalentTypeFile: string {
@@ -79,13 +80,16 @@ class TalentController extends Controller
      */
     public function create(Request $request) {
         $talent = new Talent();
-        $talent->last       = mb_strtoupper($request->last, 'UTF-8');
-        $talent->first      = mb_ucwords($request->first, 'UTF-8');
+
+        $talent->last       = Str::upper($request->last);
+        $talent->first      = Str::headline($request->first);
         $talent->xp         = $request->xp;
         $talent->tjm        = $request->tjm;
-        $talent->address    = mb_strtoupper($request->address, 'UTF-8');
-        $talent->city       = mb_strtoupper($request->city, 'UTF-8');
-        $talent->country    = mb_strtoupper($request->country, 'UTF-8');
+        $talent->address    = Str::upper($request->address['address']);
+        $talent->complementaddress = Str::upper($request->address['complementaddress']);
+        $talent->cp         = $request->address['cp'];
+        $talent->city       = Str::upper($request->address['city']);
+        $talent->country    = Str::upper($request->address['country']);
         $talent->remote     = $request->remote;
         $talent->linkedin   = $request->linkedin ;
         $talent->indicatifphone = $request->indicatifphone;
@@ -357,11 +361,11 @@ class TalentController extends Controller
      */
     public function updateAddress(int $profileId, Request $request) {
         $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
-        $talent->address = mb_strtoupper($request->address, 'UTF-8');
-        $talent->complementaddress = mb_strtoupper($request->complementaddress, 'UTF-8');
+        $talent->address = Str::upper($request->address);
+        $talent->complementaddress = Str::upper($request->complementaddress);
         $talent->cp = $request->cp;
-        $talent->city = mb_strtoupper($request->city, 'UTF-8');
-        $talent->country = mb_strtoupper($request->country, 'UTF-8');
+        $talent->city = Str::upper($request->city);
+        $talent->country = Str::upper($request->country);
         $talent->save();
         return response()->json(['data' => $talent, 'status' => 200], 200 );    
     }
