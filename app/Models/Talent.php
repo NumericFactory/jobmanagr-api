@@ -53,6 +53,9 @@ class Talent extends Model
         return $this->hasMany(Resume::class);
     }
 
+    /**
+     * Get all of the contracts for the talent.
+     */
     public function contracts() {
         return $this->hasMany(TalentContract::class);
     }

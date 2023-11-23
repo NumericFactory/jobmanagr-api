@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\TalentController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SkillController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -82,52 +86,52 @@ Route::get('/logout', [LogoutController::class, 'invoke'])
 Route::get('/login', function () {return "Hello I am JobBoard API!";});
 
 // jobs
-Route::get('/jobs', [\App\Http\Controllers\JobController::class, 'index']);
-Route::get('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'find']);
-Route::post('/jobs', [\App\Http\Controllers\JobController::class, 'create']);
-Route::put('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'update']);
-Route::patch('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'patch']);
-Route::delete('/jobs/{id}', [\App\Http\Controllers\JobController::class, 'delete']);
+Route::get('/jobs', [JobController::class, 'index']);
+Route::get('/jobs/{id}', [JobController::class, 'find']);
+Route::post('/jobs', [JobController::class, 'create']);
+Route::put('/jobs/{id}', [JobController::class, 'update']);
+Route::patch('/jobs/{id}', [JobController::class, 'patch']);
+Route::delete('/jobs/{id}', [JobController::class, 'delete']);
 
 // talents
-Route::get('/talents', [\App\Http\Controllers\TalentController::class, 'index']);
-Route::get('/talents/search', [\App\Http\Controllers\TalentController::class, 'search']);
-Route::get('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'find']);
-Route::post('/talents', [\App\Http\Controllers\TalentController::class, 'create']);
-Route::put('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'update']);
-Route::patch('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'patch']);
-Route::delete('/talents/{id}', [\App\Http\Controllers\TalentController::class, 'delete']);
-Route::put('/talents/{id}/address', [\App\Http\Controllers\TalentController::class, 'updateAddress']);
-Route::put('/talents/{id}/{field}', [\App\Http\Controllers\TalentController::class, 'updateField']);
+Route::get('/talents', [TalentController::class, 'index']);
+Route::get('/talents/search', [TalentController::class, 'search']);
+Route::get('/talents/{id}', [TalentController::class, 'find']);
+Route::post('/talents', [TalentController::class, 'create']);
+Route::put('/talents/{id}', [TalentController::class, 'update']);
+Route::patch('/talents/{id}', [TalentController::class, 'patch']);
+Route::delete('/talents/{id}', [TalentController::class, 'delete']);
+Route::put('/talents/{id}/address', [TalentController::class, 'updateAddress']);
+Route::put('/talents/{id}/{field}', [TalentController::class, 'updateField']);
 
-Route::get('/talents/{id}/resumes', [\App\Http\Controllers\TalentController::class, 'getResumeLinks']);
-Route::post('/talents/{id}/resumes', [\App\Http\Controllers\TalentController::class, 'uploadResume']);
-Route::get('/talents/{id}/resumes/{resumeId}', [\App\Http\Controllers\TalentController::class, 'downloadResumeFile']);
-Route::delete('/talents/{id}/resumes/{resumeId}', [\App\Http\Controllers\TalentController::class, 'deleteResume']);
+Route::get('/talents/{id}/resumes', [TalentController::class, 'getResumeLinks']);
+Route::post('/talents/{id}/resumes', [TalentController::class, 'uploadResume']);
+Route::get('/talents/{id}/resumes/{resumeId}', [TalentController::class, 'downloadResumeFile']);
+Route::delete('/talents/{id}/resumes/{resumeId}', [TalentController::class, 'deleteResume']);
 
-Route::get('/talents/{id}/contracts', [\App\Http\Controllers\TalentController::class, 'getContractsLinks']);
-Route::post('/talents/{id}/contracts', [\App\Http\Controllers\TalentController::class, 'uploadContract']);
-Route::post('/talents/{id}/contracts/{contractId}', [\App\Http\Controllers\TalentController::class, 'downloadContractFile']);
-Route::delete('/talents/{id}/contracts/{contractId}', [\App\Http\Controllers\TalentController::class, 'deleteContract']);
+Route::get('/talents/{id}/contracts', [TalentController::class, 'getContractsLinks']);
+Route::post('/talents/{id}/contracts', [TalentController::class, 'uploadContract']);
+Route::post('/talents/{id}/contracts/{contractId}', [TalentController::class, 'downloadContractFile']);
+Route::delete('/talents/{id}/contracts/{contractId}', [TalentController::class, 'deleteContract']);
 
 // customers
-Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index']);
-Route::get('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'find']);
-Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'create']);
-Route::put('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'update']);
-Route::patch('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'patch']);
-Route::delete('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'delete']);
+Route::get('/customers', [CustomerController::class, 'index']);
+Route::get('/customers/{id}', [CustomerController::class, 'find']);
+Route::post('/customers', [CustomerController::class, 'create']);
+Route::put('/customers/{id}', [CustomerController::class, 'update']);
+Route::patch('/customers/{id}', [CustomerController::class, 'patch']);
+Route::delete('/customers/{id}', [CustomerController::class, 'delete']);
 
 // contacts
-Route::get('/contacts', [\App\Http\Controllers\ContactController::class, 'index']);
-Route::post('/contacts', [\App\Http\Controllers\ContactController::class, 'create']);
-Route::put('/contacts/{id}', [\App\Http\Controllers\ContactController::class, 'update']);
-Route::patch('/contacts/{id}', [\App\Http\Controllers\ContactController::class, 'patch']);
-Route::delete('/contacts/{id}', [\App\Http\Controllers\ContactController::class, 'delete']);
+Route::get('/contacts', [ContactController::class, 'index']);
+Route::post('/contacts', [ContactController::class, 'create']);
+Route::put('/contacts/{id}', [ContactController::class, 'update']);
+Route::patch('/contacts/{id}', [ContactController::class, 'patch']);
+Route::delete('/contacts/{id}', [ContactController::class, 'delete']);
 
 // skills
-Route::get('/skills', [\App\Http\Controllers\SkillController::class, 'index']);
-Route::post('/skills', [\App\Http\Controllers\SkillController::class, 'create']);
-Route::put('/skills/{id}', [\App\Http\Controllers\SkillController::class, 'update']);
-Route::patch('/skills/{id}', [\App\Http\Controllers\SkillController::class, 'patch']);
-Route::delete('/skills/{id}', [\App\Http\Controllers\SkillController::class, 'delete']);
+Route::get('/skills', [SkillController::class, 'index']);
+Route::post('/skills', [SkillController::class, 'create']);
+Route::put('/skills/{id}', [SkillController::class, 'update']);
+Route::patch('/skills/{id}', [SkillController::class, 'patch']);
+Route::delete('/skills/{id}', [SkillController::class, 'delete']);

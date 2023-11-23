@@ -24,7 +24,7 @@ class TalentController extends Controller
      * Get all talents
      */
     public function index() {
-        $talents = Talent::with('skills', 'resumes')->get();
+        $talents = Talent::with('skills', 'resumes', 'contracts')->get();
         return response()->json([
             'data' => $talents,
             'status' => 200
@@ -208,6 +208,13 @@ class TalentController extends Controller
         return Storage::download($resume->link);
     }
 
+    /**
+     * route : DELETE /talents/{$id}/resumes/{$resumeId}
+     * delete a resume for a talent
+     * @param int $id (profile id)
+     * @param int $resumeId (resume id)
+     * @return json
+     */
     public function deleteResume(int $id, int $resumeId) {
         $talent = Talent::find($id);
         if(self::isTalentExists($talent) == false) {
@@ -229,20 +236,14 @@ class TalentController extends Controller
         }
     }
 
-    
+    /** CONTRACTS */
 
-
-
-
-    
-
-
-
-
-
-
-
-
+    /**
+     * route : GET /talents/{$id}/contracts
+     * get all contracts for a talent
+     * @param int $id (profile id)
+     * @return json
+     */
     public function getContractLinks(int $id) {
         $talent = Talent::find($id);
         if(count($talent->contracts) > 0) {
@@ -253,18 +254,41 @@ class TalentController extends Controller
         }
     }
 
-    public function downloadContractFile(int $id, Request $request) {
-        $link = $request->contractLink;
+    /**
+     * route : GET /talents/{$id}/contracts/{$contractId}
+     * download a contract's talent by id
+     * @param int $id (profile id)
+     * @param int $contractId (contract id)
+     * @return file
+     */
+    public function downloadContractFile(int $id, int $contractId) {
         $talent = Talent::find($id);
-        $lastname = strtolower($talent->last);
-        $firstname = strtolower($talent->first);
-        $path = 'profiles/'.$id;
-        $fileName = 'contrat-' . $lastname . '-'.$firstname . '-' . $id.'.pdf';
-        return Storage::download($link, $fileName);
+        if(self::isTalentExists($talent) == false) {
+            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+        }
+        $contract = $talent->contracts()->find($contractId);
+        if($contract == null) {
+            return response()->json(['status' => 404, 'message'=>'no contract found for id='. $contractId], 404 );
+        }
+        return Storage::download($contract->link);
     }
 
+    /**
+     * route : DELETE /talents/{$id}/contracts/{$contractId}
+     * delete a contract for a talent
+     * @param int $id (profile id)
+     * @param int $contractId (contract id)
+     * @return json
+     */
     public function deleteContract(int $id, int $contractId) {
-        $contract = Contract::find($contractId);
+        $talent = Talent::find($id);
+        if(self::isTalentExists($talent) == false) {
+            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+        }
+        $contract = $talent->contracts()->find($contractId);
+        if($contract == null) {
+            return response()->json(['status' => 404, 'message'=>'no contract found for id='. $contractId], 404 );
+        }
         $storagelink = $contract->link;
         $isDeletedContract = $contract->delete();
         if($isDeletedContract) {
@@ -273,9 +297,7 @@ class TalentController extends Controller
                 'message' => 'Contract deleted',
                 'id' => $contract->id,
                 'status' => 200
-            ],
-            200
-        );
+            ],200 );
         }
     }
 
@@ -287,22 +309,16 @@ class TalentController extends Controller
      */
     public function uploadContract(int $id, Request $request) {
         $talent = Talent::find($id);
-        if(self::isTalentExists($talent) == false ) {
-            return response()->json(['data' => null, 'status' => 404, 'message'=>'no talent found'], 404 );
+        if(self::isTalentExists($talent) == false) {
+            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
         }
-        $filePath = self::generatePath($talent, TalentTypeFile::Contract);
-        $extension = $request->file->getClientOriginalExtension();
-        Storage::disk('local')->put( $filePath, file_get_contents($request->file).$extension);
-        $contract = $talent->contracts()->create([
-            'link' => '/' . $filePath,
-            'talent_id' => $id
-        ]);
+        $contract = $fileManager->uploadTalentContract($talent, $request->file);
         return response()->json([
             'message' => 'Contract added successfuly',
-            'data' => [
-                'id' => $contract->id,
-                'link' => '/'. $filePath,
-                'created_at' => $contract->created_at
+            'data' => [ 
+                'id'            => $contract->id, 
+                'link'          => '/'. $contract->link, 
+                'created_at'    => $contract->created_at 
             ],
             'talent_id' => $id,
             'status' => 201
