@@ -7,6 +7,7 @@ use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Requests\UploadResumeRequest;
 use App\Services\UploadFileManagerService;
+use \Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,7 @@ class TalentController extends Controller
      * route : GET /talents
      * Get all talents
      */
-    public function index() {
+    public function index(): JsonResponse {
         $talents = Talent::with('skills', 'resumes', 'contracts')->get();
         return response()->json([
             'data' => $talents,
@@ -37,7 +38,7 @@ class TalentController extends Controller
      * route : GET /talents/{$id}
      * Get a talent by id
      */
-    public function find(int $id) {
+    public function find(int $id): JsonResponse {
         $talent = Talent::with('skills', 'resumes')->where('id', $id)->get();
         if(count($talent) > 0) {
             return response()->json(['data' => $talent, 'status' => 200], 200 );
@@ -49,14 +50,9 @@ class TalentController extends Controller
 
     /**
      * route : GET /talents/search/search?
-     * search Talents
-     * @queryParam skill string (optionnal)
-     * @queryParam city string (optionnal)
-     * @queryParam tjmMax integer (optionnal)
-     * @param Request $request
-     * 
+     * search Talents by skill, city, tjmMax 
      */
-    public function search(Request $request) {
+    public function search(Request $request): JsonResponse {
         $skill = $request->skill ? strtolower($request->skill) : null;
         $city = $request->city ? strtolower($request->city) : null;
         $tjmMax = $request->tjmMax ?  $request->tjmMax : null;
@@ -78,7 +74,7 @@ class TalentController extends Controller
      * route : POST /talents
      * Create and store a new talent
      */
-    public function create(Request $request) {
+    public function create(Request $request): JsonResponse {
         $talent = new Talent();
 
         $talent->last       = Str::upper($request->last);
@@ -142,15 +138,43 @@ class TalentController extends Controller
         }
     }
 
+    /**
+     * route : PUT /talents/{$id}/{$field}
+     * save a field for a talent
+     */
+    public function updateField(int $profileId, string $field, Request $request): JsonResponse {
+        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
+        switch($talent->$field) {
+            case 'last': $talent->$field = strtoupper($request->value); break;
+            case 'first': $talent->$field = ucwords($request->value); break;
+            default: $talent->$field = $request->value; break;
+        }
+        $talent->save();
+        return response()->json(['data' => $talent, 'status' => 200], 200 );    
+    }
+
+    /**
+     * route : PUT /talents/{$id}/address
+     * save address for a talent
+     */
+    public function updateAddress(int $profileId, Request $request): JsonResponse {
+        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
+        $talent->address = Str::upper($request->address);
+        $talent->complementaddress = Str::upper($request->complementaddress);
+        $talent->cp = $request->cp;
+        $talent->city = Str::upper($request->city);
+        $talent->country = Str::upper($request->country);
+        $talent->save();
+        return response()->json(['data' => $talent, 'status' => 200], 200 );    
+    }
+
+
+
     /** RESUMES */
 
     /**
      * route : POST /talents/{$id}/resumes
      * role  : upload a resume for a talent
-     * @param int $id (profile id)
-     * @param UploadResumeRequest $request (file)
-     * @param FileManagerService $fileManager
-     * @return json
      */
     public function uploadResume(int $id, UploadResumeRequest $request, UploadFileManagerService $fileManager) {
         $talent = Talent::find($id);
@@ -176,8 +200,6 @@ class TalentController extends Controller
     /**
      * route : GET /talents/{$id}/resumes
      * get all resumes for a talent
-     * @param int $id (profile id)
-     * @return json
      */
     public function getResumeLinks(int $id) {
         $talent = Talent::find($id);
@@ -190,11 +212,8 @@ class TalentController extends Controller
     }
 
     /**
-     * route : POST /talents/{$id}/resumes/{$resumeId}
+     * route : GET /talents/{$id}/resumes/{$resumeId}
      * download a resume's talent by id
-     * @param int $id (profile id)
-     * @param int $resumeId (resume id)
-     * @return file
      */
     public function downloadResumeFile(int $id, int $resumeId) {
         $talent = Talent::find($id);
@@ -211,11 +230,8 @@ class TalentController extends Controller
     /**
      * route : DELETE /talents/{$id}/resumes/{$resumeId}
      * delete a resume for a talent
-     * @param int $id (profile id)
-     * @param int $resumeId (resume id)
-     * @return json
      */
-    public function deleteResume(int $id, int $resumeId) {
+    public function deleteResume(int $id, int $resumeId): JsonResponse {
         $talent = Talent::find($id);
         if(self::isTalentExists($talent) == false) {
             return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
@@ -241,10 +257,8 @@ class TalentController extends Controller
     /**
      * route : GET /talents/{$id}/contracts
      * get all contracts for a talent
-     * @param int $id (profile id)
-     * @return json
      */
-    public function getContractLinks(int $id) {
+    public function getContractLinks(int $id): JsonResponse {
         $talent = Talent::find($id);
         if(count($talent->contracts) > 0) {
             return response()->json(['data' => $contracts, 'status' => 200], 200 );
@@ -257,9 +271,6 @@ class TalentController extends Controller
     /**
      * route : GET /talents/{$id}/contracts/{$contractId}
      * download a contract's talent by id
-     * @param int $id (profile id)
-     * @param int $contractId (contract id)
-     * @return file
      */
     public function downloadContractFile(int $id, int $contractId) {
         $talent = Talent::find($id);
@@ -276,11 +287,8 @@ class TalentController extends Controller
     /**
      * route : DELETE /talents/{$id}/contracts/{$contractId}
      * delete a contract for a talent
-     * @param int $id (profile id)
-     * @param int $contractId (contract id)
-     * @return json
      */
-    public function deleteContract(int $id, int $contractId) {
+    public function deleteContract(int $id, int $contractId): JsonResponse {
         $talent = Talent::find($id);
         if(self::isTalentExists($talent) == false) {
             return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
@@ -304,10 +312,8 @@ class TalentController extends Controller
     /**
      * route : POST /talents/{$id}/contracts
      * upload a contract for a talent
-     * @param int $id (profile id)
-     * @param Request $request (file)
      */
-    public function uploadContract(int $id, Request $request) {
+    public function uploadContract(int $id, Request $request): JsonResponse {
         $talent = Talent::find($id);
         if(self::isTalentExists($talent) == false) {
             return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
@@ -349,44 +355,7 @@ class TalentController extends Controller
 
    
 
-    /**
-     * route : PUT /talents/{$id}/{$field}
-     * save a field for a talent
-     * @param int $id (profile id)
-     * @param string $field (field name)
-     * @param Request $request (value)
-     * @return json
-     */
-    public function updateField(int $profileId, string $field, Request $request) {
-        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
-        switch($talent->$field) {
-            case 'last': $talent->$field = strtoupper($request->value); break;
-            case 'first': $talent->$field = ucwords($request->value); break;
-            default: $talent->$field = $request->value; break;
-        }
-        $talent->save();
-        return response()->json(['data' => $talent, 'status' => 200], 200 );    
-    }
-
-    /**
-     * route : PUT /talents/{$id}/address
-     * save address for a talent
-     * @param int $id (profile id)
-     * @param Request $request (address, complementaddress, cp, city, country)
-     * @return json
-     */
-    public function updateAddress(int $profileId, Request $request) {
-        $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
-        $talent->address = Str::upper($request->address);
-        $talent->complementaddress = Str::upper($request->complementaddress);
-        $talent->cp = $request->cp;
-        $talent->city = Str::upper($request->city);
-        $talent->country = Str::upper($request->country);
-        $talent->save();
-        return response()->json(['data' => $talent, 'status' => 200], 200 );    
-    }
-
-
+    
 
 
     // UTILS
