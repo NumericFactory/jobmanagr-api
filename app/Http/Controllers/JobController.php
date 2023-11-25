@@ -10,13 +10,21 @@ class JobController extends Controller
      * route : GET /jobs
      * Get jobs
      */
-    public function index() {
-        $jobs = Job::all();
+    public function index(Request $request) {
+        if ($request->filled('withcustomer')) {
+           if($request->query('withcustomer') == true) {
+                $jobs = Job::with('customer')->get();
+            }
+        }
+        else {
+            $jobs = Job::all();
+
+        }
         return response()->json([
             'data' => $jobs,
             'status' => 200],
         200
-        );
+    );
     }
 
     /**

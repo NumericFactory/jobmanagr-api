@@ -101,6 +101,8 @@ Route::post('/talents', [TalentController::class, 'create']);
 Route::put('/talents/{id}', [TalentController::class, 'update']);
 Route::patch('/talents/{id}', [TalentController::class, 'patch']);
 Route::delete('/talents/{id}', [TalentController::class, 'delete']);
+Route::post('/talents/{id}/skills', [TalentController::class, 'addSkill']);
+Route::delete('/talents/{id}/skills/{skillId}', [TalentController::class, 'deleteSkill']);
 Route::put('/talents/{id}/address', [TalentController::class, 'updateAddress']);
 Route::put('/talents/{id}/{field}', [TalentController::class, 'updateField']);
 
@@ -111,7 +113,7 @@ Route::delete('/talents/{id}/resumes/{resumeId}', [TalentController::class, 'del
 
 Route::get('/talents/{id}/contracts', [TalentController::class, 'getContractsLinks']);
 Route::post('/talents/{id}/contracts', [TalentController::class, 'uploadContract']);
-Route::post('/talents/{id}/contracts/{contractId}', [TalentController::class, 'downloadContractFile']);
+Route::get('/talents/{id}/contracts/{contractId}', [TalentController::class, 'downloadContractFile']);
 Route::delete('/talents/{id}/contracts/{contractId}', [TalentController::class, 'deleteContract']);
 
 // customers

@@ -5,11 +5,14 @@ use App\Models\Talent;
 use App\Models\Skill;
 use App\Models\Resume;
 use Illuminate\Http\Request;
-use App\Http\Requests\UploadResumeRequest;
 use App\Services\UploadFileManagerService;
 use \Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
+use App\Http\Requests\Talent\UploadResumeRequest;
+use App\Http\Requests\Talent\CreateTalentRequest;
+use App\Http\Requests\Talent\UpdateAddressTalentRequest;
 
 
 enum TalentTypeFile: string {
@@ -74,9 +77,8 @@ class TalentController extends Controller
      * route : POST /talents
      * Create and store a new talent
      */
-    public function create(Request $request): JsonResponse {
+    public function create(CreateTalentRequest $request): JsonResponse {
         $talent = new Talent();
-
         $talent->last       = Str::upper($request->last);
         $talent->first      = Str::headline($request->first);
         $talent->xp         = $request->xp;
@@ -157,7 +159,7 @@ class TalentController extends Controller
      * route : PUT /talents/{$id}/address
      * save address for a talent
      */
-    public function updateAddress(int $profileId, Request $request): JsonResponse {
+    public function updateAddress(int $profileId, UpdateAddressTalentRequest $request): JsonResponse {
         $talent = Talent::with('skills', 'resumes')->where('id', $profileId)->get()[0];
         $talent->address = Str::upper($request->address);
         $talent->complementaddress = Str::upper($request->complementaddress);
@@ -166,6 +168,40 @@ class TalentController extends Controller
         $talent->country = Str::upper($request->country);
         $talent->save();
         return response()->json(['data' => $talent, 'status' => 200], 200 );    
+    }
+
+    /**
+     * route : POST /talents/{$id}/skills
+     * add a skill for a talent (in skillables table)
+     */
+    public function addSkill(int $id, Request $request): JsonResponse {
+        $talent = Talent::find($id);
+        $skillExists = $talent->skills()->where('skill_id', $request->skill_id)->first();
+        if($skillExists) {
+            return response()->json(['message' => 'Skill already exists for this talent', 'status' => 422], 422 );
+        }
+        $skill = Skill::find($request->skill_id);
+        $talent->skills()->attach($skill);
+        return response()->json(['data' =>  $talent->skills , 'status' => 201], 201 ); 
+    }
+
+    /**
+     * route : DELETE /talents/{$id}/skills/{$skillId}
+     * delete a skill for a talent (in skillables table)
+     */
+    public function deleteSkill(int $id, int $skillId): JsonResponse {
+        $talent = Talent::find($id);
+        $skillExists = $talent->skills()->where('skill_id', $skillId)->first();
+        if(!$skillExists) {
+            return response()->json(['message' => 'Skill not found', 'status' => 404], 404 );
+        }
+        $talent->skills()->detach($skillId);
+        return response()->json([
+            'id'=> $skillId, 
+            'message' => 'Skill removed for this talent', 
+            'status' => 200
+        ], 200 );
+        
     }
 
 
