@@ -75,7 +75,7 @@ class JobController extends Controller
      * patch fields for an existing job 
      */
     public function patch(int $id, Request $request) {
-        $job = Job::findOrFail($id);
+        $job = Job::with('customer')->findOrFail($id);
         $requestData = $request->all();
         $job->update($requestData);
         return response()->json([

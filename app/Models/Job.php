@@ -17,7 +17,7 @@ class Job extends Model
         'title', 
         'customer_id',
         'description',
-        'isremote',
+        'isRemote',
         'duration',
         'tjmin',
         'tjmax',
