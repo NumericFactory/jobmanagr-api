@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 use App\Models\Job;
+use App\Models\Skill;
 use Illuminate\Http\Request;
+use \Illuminate\Http\JsonResponse;
 
 class JobController extends Controller
 {
@@ -12,10 +14,11 @@ class JobController extends Controller
      */
     public function index(Request $request) {
         if ($request->filled('withcustomer')) {
-           if($request->query('withcustomer') == true) {
-                $jobs = Job::with('customer')->get();
+            if($request->query('withcustomer') == true) {
+                $jobs = Job::with('customer', 'skills')->get();
             }
         }
+
         else {
             $jobs = Job::all();
 
@@ -75,9 +78,10 @@ class JobController extends Controller
      * patch fields for an existing job 
      */
     public function patch(int $id, Request $request) {
-        $job = Job::with('customer')->findOrFail($id);
+        $job = Job::findOrFail($id);
         $requestData = $request->all();
         $job->update($requestData);
+        $customer = $job->customer;
         return response()->json([
             'message' => 'Job updated successfully',
             'data' => $job,
@@ -103,5 +107,39 @@ class JobController extends Controller
             200
         );
         }
+    }
+
+     /**
+     * route : POST /jobs/{$id}/skills
+     * add a skill for a job (in skillables table)
+     */
+    public function addSkill(int $id, Request $request): JsonResponse {
+        $job = Job::find($id);
+        $skillExists = $job->skills()->where('skill_id', $request->skill_id)->first();
+        if($skillExists) {
+            return response()->json(['message' => 'Skill already exists for this job', 'status' => 422], 422 );
+        }
+        $skill = Skill::find($request->skill_id);
+        $job->skills()->attach($skill);
+        return response()->json(['data' =>  $job->skills , 'status' => 201], 201 ); 
+    }
+
+    /**
+     * route : DELETE /jobs/{$id}/skills/{$skillId}
+     * delete a skill for a job (in skillables table)
+     */
+    public function deleteSkill(int $id, int $skillId): JsonResponse {
+        $job = Job::find($id);
+        $skillExists = $job->skills()->where('skill_id', $skillId)->first();
+        if(!$skillExists) {
+            return response()->json(['message' => 'Skill not found', 'status' => 404], 404 );
+        }
+        $job->skills()->detach($skillId);
+        return response()->json([
+            'id'=> $skillId, 
+            'message' => 'Skill removed for this job', 
+            'status' => 200
+        ], 200 );
+        
     }
 }

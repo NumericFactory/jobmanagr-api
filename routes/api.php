@@ -92,6 +92,8 @@ Route::post('/jobs', [JobController::class, 'create']);
 Route::put('/jobs/{id}', [JobController::class, 'update']);
 Route::patch('/jobs/{id}', [JobController::class, 'patch']);
 Route::delete('/jobs/{id}', [JobController::class, 'delete']);
+Route::post('/jobs/{id}/skills', [JobController::class, 'addSkill']);
+Route::delete('/jobs/{id}/skills/{skillId}', [JobController::class, 'deleteSkill']);
 
 // talents
 Route::get('/talents', [TalentController::class, 'index']);
