@@ -48,17 +48,18 @@ class CustomerController extends Controller
      */
     public function create(Request $request) {
         $customer = new Customer();
+        //return response()->json($request->address['cp']);
         $customer->name     = $request->name;
         $customer->type     = $request->type;
         $customer->isorganismeformation = $request->isorganismeformation;
         $customer->siren    = $request->siren;
         $customer->nic      = $request->nic;
         $customer->siret    = $request->siret;
-        $customer->address  = $request->address->address;
-        $customer->complementaddress = $request->address->complementaddress;
-        $customer->cp       = $request->address->cp;
-        $customer->city     = $request->address->city;
-        $customer->country  = $request->address->country;
+        $customer->address  = $request->address['address'];
+        $customer->complementaddress = $request->address['complementaddress'];
+        $customer->cp       = $request->address['cp'];
+        $customer->city     = $request->address['city'];
+        $customer->country  = $request->address['country'];
         $isSavedCustomer    = $customer->save();
         if($isSavedCustomer) {
             return response()->json([
