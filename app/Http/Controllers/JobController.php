@@ -18,7 +18,6 @@ class JobController extends Controller
                 $jobs = Job::with('customer', 'skills')->get();
             }
         }
-
         else {
             $jobs = Job::all();
 
@@ -26,8 +25,8 @@ class JobController extends Controller
         return response()->json([
             'data' => $jobs,
             'status' => 200],
-        200
-    );
+            200
+        );
     }
 
     /**

@@ -54,11 +54,11 @@ class CustomerController extends Controller
         $customer->siren    = $request->siren;
         $customer->nic      = $request->nic;
         $customer->siret    = $request->siret;
-        $customer->address  = $request->address;
-        $customer->complementaddress = $request->complementaddress;
-        $customer->cp       = $request->cp;
-        $customer->city     = $request->city;
-        $customer->country  = $request->country;
+        $customer->address  = $request->address->address;
+        $customer->complementaddress = $request->address->complementaddress;
+        $customer->cp       = $request->address->cp;
+        $customer->city     = $request->address->city;
+        $customer->country  = $request->address->country;
         $isSavedCustomer    = $customer->save();
         if($isSavedCustomer) {
             return response()->json([
