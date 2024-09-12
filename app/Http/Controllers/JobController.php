@@ -157,24 +157,29 @@ class JobController extends Controller
      * role  : upload a document for a job
      */
     public function uploadDocument(int $id, UploadDocumentRequest $request, UploadFileManagerService $fileManager) {
-        $talent = Talent::find($id);
-        if(self::isTalentExists($talent) == false) {
+        $job = Job::find($id);
+        if(self::isJobExists($job) == false) {
             return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
         }
-        if(count($talent->resumes) >= 3) {
-            return response()->json(['status' => 400, 'message'=>'You can not upload more than 3 resumes'], 400);
-        }
-        $resume = $fileManager->uploadTalentResume($talent, $request->file);
+        $doc = $fileManager->uploadJobDocument($job, $request->file);
         return response()->json([
-            'message' => 'Resume added successfuly',
+            'message' => 'Document added successfuly',
             'data' => [ 
-                'id'            => $resume->id, 
-                'link'          => '/'. $resume->link, 
-                'created_at'    => $resume->created_at 
+                'id'            => $doc->id, 
+                'link'          => '/'. $doc->link, 
+                'created_at'    => $doc->created_at 
             ],
-            'talent_id' => $id,
+            'job_id' => $id,
             'status' => 201
         ], 201); 
+    }
+
+
+
+
+       // UTILS
+       private static function isJobExists($job) {
+        return ($job && $job->last && $job->first) ? true : false;  
     }
 
 
