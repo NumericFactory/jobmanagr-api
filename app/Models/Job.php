@@ -36,6 +36,13 @@ class Job extends Model
     {
         return $this->morphToMany(Skill::class, 'skillable');
     }
+
+    /**
+     * Get all of the documents for the job.
+     */
+    public function documents() {
+        return $this->hasMany(Document::class);
+    }
 	
 
     public function customer()

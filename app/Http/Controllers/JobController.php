@@ -5,6 +5,11 @@ use App\Models\Job;
 use App\Models\Skill;
 use Illuminate\Http\Request;
 use \Illuminate\Http\JsonResponse;
+use App\Services\UploadFileManagerService;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+use App\Http\Requests\Job\UploadDocumentRequest;
 
 class JobController extends Controller
 {
@@ -141,4 +146,38 @@ class JobController extends Controller
         ], 200 );
         
     }
+
+
+
+
+    /** DOCUMENTS */
+
+    /**
+     * route : POST /jobs/{$id}/documents
+     * role  : upload a document for a job
+     */
+    public function uploadDocument(int $id, UploadDocumentRequest $request, UploadFileManagerService $fileManager) {
+        $talent = Talent::find($id);
+        if(self::isTalentExists($talent) == false) {
+            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+        }
+        if(count($talent->resumes) >= 3) {
+            return response()->json(['status' => 400, 'message'=>'You can not upload more than 3 resumes'], 400);
+        }
+        $resume = $fileManager->uploadTalentResume($talent, $request->file);
+        return response()->json([
+            'message' => 'Resume added successfuly',
+            'data' => [ 
+                'id'            => $resume->id, 
+                'link'          => '/'. $resume->link, 
+                'created_at'    => $resume->created_at 
+            ],
+            'talent_id' => $id,
+            'status' => 201
+        ], 201); 
+    }
+
+
+
+
 }

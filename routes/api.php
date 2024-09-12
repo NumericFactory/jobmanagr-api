@@ -95,6 +95,11 @@ Route::delete('/jobs/{id}', [JobController::class, 'delete']);
 Route::post('/jobs/{id}/skills', [JobController::class, 'addSkill']);
 Route::delete('/jobs/{id}/skills/{skillId}', [JobController::class, 'deleteSkill']);
 
+Route::get('/jobs/{id}/documents', [JobController::class, 'getDocumentLinks']);
+Route::post('/jobs/{id}/documents', [JobController::class, 'uploadDocument']);
+Route::get('/jobs/{id}/documents/{documentId}', [JobController::class, 'downloadDocumentFile']);
+Route::delete('/jobs/{id}/documents/{documentId}', [JobController::class, 'deleteDocument']);
+
 // talents
 Route::get('/talents', [TalentController::class, 'index']);
 Route::get('/talents/search', [TalentController::class, 'search']);
