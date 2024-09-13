@@ -174,6 +174,24 @@ class JobController extends Controller
         ], 201); 
     }
 
+
+    /**
+     * route : GET /jobs/{$id}/documents/{$documentId}
+     * download a document's job by id
+     */
+    public function downloadDocumentFile(int $id, int $documentId) {
+       $job = Job::find($id);
+        if(self::isJobExists($job) == false) {
+            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+        }
+        $document = $job->documents()->find($documentId);
+        if($document == null) {
+            return response()->json(['status' => 404, 'message'=>'no document found for id='. $documentId], 404 );
+        }
+        return Storage::download($document->link);
+    }
+
+
     /**
      * route : DELETE /jobs/{$id}/documents/{$documentId}
      * delete a doc for a job
