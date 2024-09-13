@@ -20,7 +20,7 @@ class JobController extends Controller
     public function index(Request $request) {
         if ($request->filled('withcustomer')) {
             if($request->query('withcustomer') == true) {
-                $jobs = Job::with('customer', 'skills')->get();
+                $jobs = Job::with('customer', 'skills', 'documents')->get();
             }
         }
         else {
@@ -159,7 +159,7 @@ class JobController extends Controller
     public function uploadDocument(int $id, UploadDocumentRequest $request, UploadFileManagerService $fileManager) {
         $job = Job::find($id);
         if(self::isJobExists($job) == false) {
-            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+            return response()->json(['status' => 404, 'message'=>'no job found'], 404 );
         }
         $doc = $fileManager->uploadJobDocument($job, $request->file);
         return response()->json([
@@ -174,12 +174,38 @@ class JobController extends Controller
         ], 201); 
     }
 
+    /**
+     * route : DELETE /jobs/{$id}/documents/{$documentId}
+     * delete a doc for a job
+     */
+    public function deleteDocument(int $id, int $documentId): JsonResponse {
+        $job = Job::find($id);
+        if(self::isJobExists($job) == false) {
+            return response()->json(['status' => 404, 'message'=>'no job found'], 404 );
+        }
+        $document = $job->documents()->find($documentId);
+        if($document == null) {
+            return response()->json(['status' => 404, 'message'=>'no document found for id='. $documentId], 404 );
+        }
+        $storagelink = $document->link;
+        $isDeletedDocument = $document->delete();
+        if($isDeletedDocument) {
+            Storage::delete ($storagelink);
+            return response()->json([
+                'message' => 'Document deleted',
+                'id' => $document->id,
+                'status' => 200
+            ],200 );
+        }
+    }
+
+
 
 
 
        // UTILS
        private static function isJobExists($job) {
-        return ($job && $job->last && $job->first) ? true : false;  
+        return ($job && $job->title) ? true : false;  
     }
 
 

@@ -29,10 +29,12 @@ class UploadFileManagerService {
      * @return Document
      */
     public function uploadJobDocument(Job $job, $file): Document {
+        $path = 'jobs/'.$job->id;
+        $originalName = self::replaceSpaceWithHyphen($job->title . '-' . $file->getClientOriginalName());
         $extension = $file->getClientOriginalExtension();
-        $filePath = self::generateJobDocumentPath($job, $extension);
+        $filePath =  $path .'/'. $originalName;
         Storage::disk('local')->put( $filePath, file_get_contents($file).$extension);
-        $document = $job->resumes()->create([ 
+        $document = $job->documents()->create([ 
             'link'      => '/' . $filePath, 
             'job_id' => $job->id
         ]);
@@ -102,12 +104,22 @@ class UploadFileManagerService {
     }
 
 
-    private static function generateJobDocumentPath($job, $extension = 'pdf') {
-        $lastname = strtolower($talent->last);
-        $firstname = strtolower($talent->first);
-        $path = 'jobs/'.$job->id;
-        $fileName = $job->title . '-' . time(); 
-        return $path.'/'.$fileName. '.' .$extension;
+    /**
+     * replace space char by "-" and return toLowerCase
+     * if space char is preceed or followed by "-" or "_", juste delete space char
+     * usage replaceSpaceWithHyphen('hello world - this_is a test')
+     * output : hello-world-this_is-a-test
+     */
+    function replaceSpaceWithHyphen($string) {
+        // Use regex to match the conditions
+        $result = preg_replace('/(?<=[-_])\s+|\s+(?=[-_])/', '', $string);
+        
+        // Replace remaining spaces with hyphen
+        $result = str_replace(' ', '-', $result);
+        
+        return strtolower($result);
     }
+
+
   
 }
