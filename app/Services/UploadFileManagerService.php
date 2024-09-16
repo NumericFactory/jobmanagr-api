@@ -35,6 +35,7 @@ class UploadFileManagerService {
         $filePath =  $path .'/'. $originalName;
         Storage::disk('local')->put( $filePath, file_get_contents($file).$extension);
         $document = $job->documents()->create([ 
+            'file_name' => $originalName,
             'link'      => '/' . $filePath, 
             'job_id' => $job->id
         ]);
@@ -49,9 +50,11 @@ class UploadFileManagerService {
      */
     public function uploadTalentResume(Talent $talent, $file): Resume {
         $extension = $file->getClientOriginalExtension();
-        $filePath = self::generateTalentPath($talent, TalentTypeFile::Resume, $extension);
+        $fileName = self::generateTalentDocumentPathAndFilename($talent, TalentTypeFile::Resume, $extension)['file_name'];
+        $filePath = self::generateTalentDocumentPathAndFilename($talent, TalentTypeFile::Resume, $extension)['path'];
         Storage::disk('local')->put( $filePath, file_get_contents($file).$extension);
         $resume = $talent->resumes()->create([ 
+            'file_name' => $fileName,
             'link'      => '/' . $filePath, 
             'talent_id' => $talent->id
         ]);
@@ -67,9 +70,11 @@ class UploadFileManagerService {
      */
     public function uploadTalentContract($talent, $file) {
         $extension = $file->getClientOriginalExtension();
-        $filePath = self::generateTalentPath($talent, TalentTypeFile::Contract, $extension);
+        $fileName = self::generateTalentDocumentPathAndFilename($talent, TalentTypeFile::Contract, $extension)['file_name'];
+        $filePath = self::generateTalentDocumentPathAndFilename($talent, TalentTypeFile::Contract, $extension)['path'];
         Storage::disk('local')->put( $filePath, file_get_contents($file).$extension);
         $contract = $talent->contracts()->create([ 
+            'file_name' => $fileName,
             'link'      => '/' . $filePath, 
             'talent_id' => $talent->id
         ]);
@@ -86,7 +91,7 @@ class UploadFileManagerService {
      * @param TalentTypeFile $type
      * @param string $extension
      */
-    private static function generateTalentPath($talent, TalentTypeFile $type, $extension = 'pdf') {
+    private static function generateTalentDocumentPathAndFilename($talent, TalentTypeFile $type, $extension = 'pdf') {
         $lastname = strtolower($talent->last);
         $firstname = strtolower($talent->first);
         $path = 'profiles/'.$talent->id;
@@ -100,7 +105,10 @@ class UploadFileManagerService {
             defaut:
                 $fileName = $lastname .  $firstname . '-' . $talent->id .'-'. time(); 
         }
-        return $path.'/'.$fileName. '.' .$extension;
+        return [
+            'path' => $path.'/'.$fileName. '.' .$extension,
+            'file_name' => $fileName. '.' .$extension
+        ];
     }
 
 

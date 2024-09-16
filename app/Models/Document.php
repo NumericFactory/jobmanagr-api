@@ -9,7 +9,7 @@ class Document extends Model
 {
     use HasFactory;
     protected $table = 'documents';
-    protected $fillable = ['link', 'job_id'];
+    protected $fillable = ['link', 'file_name', 'job_id'];
 
     public function job()
     {

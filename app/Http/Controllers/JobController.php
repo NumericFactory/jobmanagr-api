@@ -165,6 +165,7 @@ class JobController extends Controller
         return response()->json([
             'message' => 'Document added successfuly',
             'data' => [ 
+                'file_name'     => $doc->file_name,
                 'id'            => $doc->id, 
                 'link'          => '/'. $doc->link, 
                 'created_at'    => $doc->created_at 
@@ -182,13 +183,14 @@ class JobController extends Controller
     public function downloadDocumentFile(int $id, int $documentId) {
        $job = Job::find($id);
         if(self::isJobExists($job) == false) {
-            return response()->json(['status' => 404, 'message'=>'no talent found'], 404 );
+            return response()->json(['status' => 404, 'message'=>'no document found'], 404 );
         }
         $document = $job->documents()->find($documentId);
         if($document == null) {
             return response()->json(['status' => 404, 'message'=>'no document found for id='. $documentId], 404 );
         }
-        return Storage::download($document->link);
+
+        return Storage::download($document->link, explode("/", $document->link)[2]);
     }
 
 

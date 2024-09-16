@@ -9,7 +9,7 @@ class Resume extends Model
 {
     use HasFactory;
     protected $table = 'resumes';
-    protected $fillable = ['link', 'talent_id'];
+    protected $fillable = ['link', 'file_name', 'talent_id'];
 
     public function talent()
     {

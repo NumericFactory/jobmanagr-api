@@ -225,6 +225,7 @@ class TalentController extends Controller
             'message' => 'Resume added successfuly',
             'data' => [ 
                 'id'            => $resume->id, 
+                'file_name'     => $resume->file_name,
                 'link'          => '/'. $resume->link, 
                 'created_at'    => $resume->created_at 
             ],
